@@ -1,27 +1,40 @@
 'use strict';
 
-const yosay = require('yosay');
 const chalk = require('chalk');
+const yosay = require('yosay');
 const Generator = require('yeoman-generator');
 
 module.exports = class extends Generator {
-
-  constructor() {
-    super(...arguments);
+  constructor(ctx, feflow) {
+    super(ctx, feflow);
 
     this.answers = {};
+
+    const { config = '' } = feflow.args || {};
+
+    try {
+      if (!config) return;
+      const { name, description, version } = JSON.parse(config);
+      this.params = {
+        name,
+        description,
+        version,
+      };
+    } catch (error) {
+      this.params = {};
+    }
   }
 
   /**
    * Print welcome message
    */
   initializing() {
-    this.log(yosay('Feflow脚手架示例'));
+    this.log(yosay('Feflow 脚手架示例'));
     this.log(
       chalk.magenta(
         `尊贵的开发者，欢迎您` +
         '\n' +
-        '这是腾讯IVWEB团队的项目脚手架, Powered by http://www.feflowjs.org/.' +
+        '这是 Feflow 的官方 React 项目脚手架, Powered by http://www.feflowjs.com/.' +
         '\n'
       )
     );
@@ -31,6 +44,13 @@ module.exports = class extends Generator {
    * Interact with developer.
    */
   prompting() {
+    const { name, description, version } = this.params || {};
+
+    if (name && description && version) {
+      this.answers = Object.assign({}, this.params);
+      return Promise.resolve(true);
+    }
+
     return this.prompt([{
       type: 'input',
       name: 'name',
@@ -71,9 +91,7 @@ module.exports = class extends Generator {
    * Install dependencies
    */
   install() {
-    const { logger } = this.options;
-
-    logger.info('安装依赖，过程持续1~2分钟');
+    console.log('安装依赖，过程持续1~2分钟');
     this.npmInstall();
   }
 
@@ -82,13 +100,12 @@ module.exports = class extends Generator {
    */
   end() {
     const { name } = this.answers;
-    const { logger } = this.options;
 
-    logger.info('本次初始化过程结束, 请通过以下命令运行项目: ');
+    console.log('本次初始化过程结束, 请通过以下命令运行项目: ');
     console.log();
     console.log(chalk.cyan('  cd'), name);
-    console.log(`  ${chalk.cyan('feflow dev')}`);
+    console.log(`  ${chalk.cyan('fef dev')}`);
     console.log();
-    logger.info('编码愉快!');
+    console.log('编码愉快!');
   }
 };
