@@ -3,7 +3,9 @@
       "commands": {
           "dev": {
               "builder": "@feflow/feflow-devkit-example:dev",
-              "options": {}
+              "options": {
+                  "open": true
+              }
           },
           "build": {
               "builder": "@feflow/feflow-devkit-example:build",

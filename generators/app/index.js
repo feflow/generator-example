@@ -1,28 +1,16 @@
 'use strict';
 
 const chalk = require('chalk');
+const minimist = require('minimist');
 const yosay = require('yosay');
 const Generator = require('yeoman-generator');
 
 module.exports = class extends Generator {
-  constructor(ctx, feflow) {
-    super(ctx, feflow);
+  constructor() {
+    // eslint-disable-next-line prefer-rest-params
+    super(...arguments);
 
     this.answers = {};
-
-    const { config = '' } = feflow.args || {};
-
-    try {
-      if (!config) return;
-      const { name, description, version } = JSON.parse(config);
-      this.params = {
-        name,
-        description,
-        version,
-      };
-    } catch (error) {
-      this.params = {};
-    }
   }
 
   /**
@@ -30,42 +18,36 @@ module.exports = class extends Generator {
    */
   initializing() {
     this.log(yosay('Feflow 脚手架示例'));
-    this.log(
-      chalk.magenta(
-        `尊贵的开发者，欢迎您` +
-        '\n' +
-        '这是 Feflow 的官方 React 项目脚手架, Powered by http://www.feflowjs.com/.' +
-        '\n'
-      )
-    );
+    this.log(chalk.magenta('尊贵的开发者，欢迎您'
+        + '\n'
+        + '这是 Feflow 的官方 React 项目脚手架, Powered by http://www.feflowjs.com/.'
+        + '\n'));
   }
 
   /**
    * Interact with developer.
    */
   prompting() {
-    const { name, description, version } = this.params || {};
-
-    if (name && description && version) {
-      this.answers = Object.assign({}, this.params);
-      return Promise.resolve(true);
+    const { config } = minimist(process.argv.slice(2));
+    if (config) {
+      return this.answers = JSON.parse(config);
     }
 
     return this.prompt([{
       type: 'input',
       name: 'name',
       message: '请输入项目名称',
-      default: 'my-project'
+      default: 'my-project',
     }, {
       type: 'input',
       name: 'description',
       message: '请输入项目描述信息',
-      default: '项目基本描述'
+      default: '项目基本描述',
     }, {
       type: 'input',
       name: 'version',
       message: '请输入版本 (1.0.0):',
-      default: '1.0.0'
+      default: '1.0.0',
     }]).then((answers) => {
       this.answers = answers;
     });
@@ -79,11 +61,11 @@ module.exports = class extends Generator {
     this.destinationRoot(this.destinationPath(name));
 
     this.fs.copyTpl(
-        `${this.templatePath()}/**/!(_)*`,
-        this.destinationPath(),
-        this.answers,
-        {},
-        { globOptions: { dot: true } }    // Copy all dots files.
+      `${this.templatePath()}/**/!(_)*`,
+      this.destinationPath(),
+      this.answers,
+      {},
+      { globOptions: { dot: true } },    // Copy all dots files.
     );
   }
 
