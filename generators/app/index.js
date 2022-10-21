@@ -9,6 +9,8 @@ module.exports = class extends Generator {
   constructor() {
     // eslint-disable-next-line prefer-rest-params
     super(...arguments);
+    const [yeomanArgs, feflowCtx] = arguments;
+    this.feflowCtx = feflowCtx;
 
     this.answers = {};
   }
@@ -22,6 +24,7 @@ module.exports = class extends Generator {
         + '\n'
         + '这是 Feflow 的官方 React 项目脚手架, Powered by http://www.feflowjs.com/.'
         + '\n'));
+    this.feflowCtx.logger.debug('初始化成功');
   }
 
   /**
@@ -73,7 +76,7 @@ module.exports = class extends Generator {
    * Install dependencies
    */
   install() {
-    console.log('安装依赖，过程持续1~2分钟');
+    this.console.log('安装依赖，过程持续1~2分钟');
     this.npmInstall();
   }
 
@@ -89,5 +92,7 @@ module.exports = class extends Generator {
     console.log(`  ${chalk.cyan('fef dev')}`);
     console.log();
     console.log('编码愉快!');
+    
+    this.feflowCtx.logger.debug('创建项目成功');
   }
 };
